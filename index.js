@@ -37,6 +37,16 @@
       return;
     }
     const target = new Date(cfg.NEXT_LOCK_ISO).getTime();
+
+    // A malformed NEXT_LOCK_ISO (unpadded hour, human-readable date, missing
+    // offset) parses to NaN. Without this guard every comparison below is
+    // false and the countdown renders "NaNd NaNh NaNm" on the live page.
+    if (isNaN(target)) {
+      els.lockCountdown.textContent = "TBD";
+      console.warn("NEXT_LOCK_ISO is not a valid ISO 8601 datetime:", cfg.NEXT_LOCK_ISO);
+      return;
+    }
+
     const tick = () => {
       const diff = target - Date.now();
       if (diff <= 0) {
@@ -69,8 +79,17 @@
     if (els.weekHeading) els.weekHeading.textContent = "Week " + latest.week + " pick breakdown";
   }
   function renderPicksPanel(weekObj) {
-    const agg = S.aggregatePicks(weekObj.entries);
     const total = weekObj.entries.length;
+
+    // The current week can be ahead of the sheet — CURRENT_WEEK in config.js
+    // sets the week whether or not picks exist for it yet. Say so plainly
+    // instead of rendering an empty breakdown with a zero count.
+    if (!total) {
+      els.picksPanel.innerHTML = '<p class="state-msg">Week ' + S.escapeHTML(weekObj.week) + ' picks aren\'t in yet. The breakdown posts once the deadline passes — check Past Weeks for earlier results.</p>';
+      return;
+    }
+
+    const agg = S.aggregatePicks(weekObj.entries);
     const rows = agg.map((c) => {
       const res = S.dominantResult(c);
       const tagClass = res.toLowerCase();
