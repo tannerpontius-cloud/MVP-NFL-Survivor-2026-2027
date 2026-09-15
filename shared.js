@@ -267,7 +267,7 @@ window.Survivor = (function () {
     "If for any reason you submit multiple picks, we will be taking the latest submission.";
 
   const LOCKED_NOTE_MAIN =
-    "This week is closed. Check out "This Week"s breakdown!";
+    "This week is closed. Check out This Week's breakdown!";
 
   const LOCKED_NOTE_DETAIL = "";
   
