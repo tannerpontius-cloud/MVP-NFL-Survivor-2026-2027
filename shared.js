@@ -143,15 +143,21 @@ window.Survivor = (function () {
     return weeksData.reduce((sum, w) => sum + w.entries.filter((e) => e.result === "Eliminated").length, 0);
   }
 
-  // Picks the week to show as "current." Honors a manual CURRENT_WEEK
-  // override in config so grading results or adding next week's rows
-  // never flips the site on its own — falls back to the highest week
-  // number present in the data if no override is set (or it doesn't
-  // match anything yet).
+  // Picks the week to show as "current."
+  //
+  // A CURRENT_WEEK value in config.js always wins. If that week has no rows in
+  // the sheet yet, this returns an empty week for that number, so the site
+  // shows the new week with an empty pick panel rather than quietly reverting
+  // to the previous week. Bump CURRENT_WEEK and the page follows immediately,
+  // with or without data behind it.
+  //
+  // Leave CURRENT_WEEK as null to auto-select whichever week number is highest
+  // in the sheet instead.
   function resolveCurrentWeek(weeksData) {
     if (cfg.CURRENT_WEEK != null) {
-      const match = weeksData.find((w) => w.week === Number(cfg.CURRENT_WEEK));
-      if (match) return match;
+      const target = Number(cfg.CURRENT_WEEK);
+      const match = weeksData.find((w) => w.week === target);
+      return match || { week: target, entries: [] };
     }
     return weeksData[weeksData.length - 1];
   }
