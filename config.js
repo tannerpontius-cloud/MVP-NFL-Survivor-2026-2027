@@ -43,7 +43,7 @@ window.SURVIVOR_CONFIG = {
   // Total number of MVPs competing this season. The "Still Alive" stat is this
   // number minus everyone eliminated so far — set it once at kickoff. If left
   // blank, the site falls back to counting just this week's entries instead.
-  TOTAL_MVPS: 568,
+  TOTAL_MVPS: 569,
     // Set to false to keep the "Still Alive" stat blank. Flip to true once
   // eliminations begin — TOTAL_MVPS above stays untouched either way.
   SHOW_REMAINING: true,
