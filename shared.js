@@ -231,22 +231,33 @@ window.Survivor = (function () {
       }
     });
 
-       document.querySelectorAll("[data-lock-note]").forEach(function (el) {
+    document.querySelectorAll("[data-lock-note]").forEach(function (el) {
       if (!hasLockDate) { el.textContent = ""; return; }
-
-      const headline = locked
-        ? LOCKED_NOTE_MAIN
-        : "Picks lock " + formatLock(lockDate);
-
-      const detail = locked ? LOCKED_NOTE_DETAIL : OPEN_NOTE_DETAIL;
 
       el.textContent = "";
 
       const main = document.createElement("span");
       main.className = "lock-note-main";
-      main.textContent = headline;
+
+      if (locked) {
+        // Built as real elements rather than a single string so the middle
+        // piece can be a working link to the breakdown section.
+        main.appendChild(document.createTextNode(LOCKED_NOTE_BEFORE));
+
+        const link = document.createElement("a");
+        link.className = "lock-note-link";
+        link.href = "#this-week";
+        link.textContent = LOCKED_NOTE_LINK;
+        main.appendChild(link);
+
+        main.appendChild(document.createTextNode(LOCKED_NOTE_AFTER));
+      } else {
+        main.textContent = "Picks lock " + formatLock(lockDate);
+      }
+
       el.appendChild(main);
 
+      const detail = locked ? LOCKED_NOTE_DETAIL : OPEN_NOTE_DETAIL;
       if (detail) {
         const sub = document.createElement("span");
         sub.className = "lock-note-sub";
@@ -261,16 +272,21 @@ window.Survivor = (function () {
     const link = event.target.closest("[data-pick-link]");
     if (link && link.classList.contains("is-locked")) event.preventDefault();
   });
+
   // --- Note copy. Edit these strings to change what appears under the button. ---
   const OPEN_NOTE_DETAIL =
     "Once you have submitted your pick for the week, you will receive a confirmation email. " +
     "If for any reason you submit multiple picks, we will be taking the latest submission.";
 
-  const LOCKED_NOTE_MAIN =
-    "This week is closed. Check out This Week's breakdown!";
+  // The locked line is split in three: the words before the link, the clickable
+  // words themselves, and the words after. Move the split wherever you like —
+  // just keep all three pieces, even if one is an empty string "".
+  const LOCKED_NOTE_BEFORE = "This week is closed. Check out ";
+  const LOCKED_NOTE_LINK = "This Week";
+  const LOCKED_NOTE_AFTER = "'s breakdown!";
 
   const LOCKED_NOTE_DETAIL = "";
-  
+
   render();
   // Recheck so a tab left open across the deadline updates on its own.
   setInterval(render, 15000);
