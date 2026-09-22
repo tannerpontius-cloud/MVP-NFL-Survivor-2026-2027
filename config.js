@@ -38,7 +38,7 @@ window.SURVIVOR_CONFIG = {
   // next week's picks to the sheet won't change what's displayed until
   // you update this number yourself. Leave null to auto-show whichever
   // week has the highest number in your data instead.
-  CURRENT_WEEK: 2,
+  CURRENT_WEEK: 3,
 
   // Total number of MVPs competing this season. The "Still Alive" stat is this
   // number minus everyone eliminated so far — set it once at kickoff. If left
