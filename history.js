@@ -22,28 +22,32 @@
   }
   function renderLadder(weeksData) {
     const cfg = S.cfg;
-    let cumulativeEliminated = 0;
-    const rows = weeksData.map((w) => {
-      const total = w.entries.length || 1;
+    // Oldest week first so the pool can roll forward correctly.
+    const ordered = [...weeksData].sort((a, b) => a.week - b.week);
+    // Pool entering Week 1: the full MVP roster, or that week's entries as a fallback.
+    let pool = Number(cfg.TOTAL_MVPS) || ordered[0].entries.length || 1;
+    const rows = ordered.map((w) => {
       const survived = w.entries.filter((e) => e.result === "Survived").length;
       const eliminated = w.entries.filter((e) => e.result === "Eliminated").length;
-      const pending = total - survived - eliminated;
-      const pct = (n) => (n / total) * 100;
-      let countLabel;
-      if (cfg.TOTAL_MVPS) {
-        cumulativeEliminated += eliminated;
-        const alive = cfg.TOTAL_MVPS - cumulativeEliminated;
-        countLabel = `<strong>${alive}</strong> / ${cfg.TOTAL_MVPS} alive`;
-      } else {
-        countLabel = `<strong>${survived + pending}</strong> / ${total} alive`;
-      }
+      const resolved = survived + eliminated;
+      const denom = pool || 1;
+      const pct = (n) => Math.max(0, Math.min(100, (n / denom) * 100));
+      const survivedPct = pct(survived);
+      const eliminatedPct = pct(eliminated);
+      const pendingPct = Math.max(0, 100 - survivedPct - eliminatedPct);
+      const alive = Math.max(0, pool - eliminated);
+      const countLabel = resolved === 0
+        ? `<strong>${pool}</strong> in play — results pending`
+        : `<strong>${alive}</strong> / ${pool} alive`;
+      // Whoever is still alive after this week becomes next week's pool.
+      pool = alive;
       return `
         <div class="ladder-rung">
           <div class="ladder-week-label">Wk ${w.week}</div>
           <div class="ladder-track">
-            <div class="ladder-segment survived" style="width:${pct(survived)}%"></div>
-            <div class="ladder-segment pending" style="width:${pct(pending)}%"></div>
-            <div class="ladder-segment eliminated" style="width:${pct(eliminated)}%"></div>
+            <div class="ladder-segment survived" style="width:${survivedPct.toFixed(1)}%"></div>
+            <div class="ladder-segment pending" style="width:${pendingPct.toFixed(1)}%"></div>
+            <div class="ladder-segment eliminated" style="width:${eliminatedPct.toFixed(1)}%"></div>
           </div>
           <div class="ladder-count">${countLabel}</div>
         </div>`;
