@@ -715,3 +715,35 @@ footer {
 .history-hero .hero-sub {
   max-width: 60ch;
 }
+.rules-reminder {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 10px 20px 10px 10px;
+  border: 1px solid rgba(128, 0, 255, 0.7);
+  border-radius: 999px;
+  background: rgba(128, 0, 255, 0.08);
+  color: #FBF9FF;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.rules-reminder-tag {
+  flex: 0 0 auto;
+  padding: 5px 12px;
+  border: 1px solid #FFD600;
+  border-radius: 999px;
+  color: #FFD600;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+@media (max-width: 760px) {
+  .rules-reminder {
+    border-radius: 16px;
+    align-items: flex-start;
+    padding: 12px 14px;
+  }
+}
